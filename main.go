@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	packetUtils "passession-extractor/packetUtil"
@@ -11,6 +10,8 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 )
+
+var secretsArray []packetUtils.Secrets = make([]packetUtils.Secrets, 0)
 
 func main() {
 	var pcapFile string
@@ -42,7 +43,26 @@ func main() {
 			continue //no application layer, we skip this packet
 		}
 
+		basicAuth := packetDetails.FindBasicAuth()
+		sessionIDs := packetDetails.FindSessionID()
+		cookies := packetDetails.FindCookies()
+		usernames := packetDetails.FindUsernames()
 		passwords := packetDetails.FindPasswords()
-		fmt.Println(passwords)
+		if len(basicAuth) > 0 || len(sessionIDs) > 0 || len(cookies) > 0 || len(usernames) > 0 || len(passwords) > 0 {
+			secrets := &packetUtils.Secrets{BasicAuths: basicAuth, SessionIDs: sessionIDs, Cookies: cookies, Usernames: usernames, Passwords: passwords}
+			secretsArray = append(secretsArray, *secrets)
+		}
+	}
+
+	file, err := os.Create("secrets_dump.json")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for i := 0; i < len(secretsArray); i++ {
+		_, err = file.WriteString(*secretsArray[i].ToJson())
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
