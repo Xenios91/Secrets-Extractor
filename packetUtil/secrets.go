@@ -56,13 +56,13 @@ func (secrets *Secrets) IsEqual(secretToCompare *Secrets) bool {
 			}
 		}
 
-		secretsToCompareFields := reflect.ValueOf(secretsTemp)
+		secretsToCompareFields := reflect.ValueOf(secretToCompareTemp)
 		fieldsToCompare := make([]interface{}, secretsToCompareFields.NumField())
 		for i := 0; i < secretsToCompareFields.NumField(); i++ {
 			field := secretsToCompareFields.Field(i)
 			fieldKind := field.Kind()
 			if fieldKind == reflect.Slice {
-				fieldsToCompare[i] = secretsTempFields.Field(i).Interface()
+				fieldsToCompare[i] = secretsToCompareFields.Field(i).Interface()
 			}
 		}
 
@@ -71,8 +71,8 @@ func (secrets *Secrets) IsEqual(secretToCompare *Secrets) bool {
 		}
 
 		for i := 0; i < len(fields); i++ {
-			if reflect.DeepEqual(fields[i], fieldsToCompare[i]) {
-				return true
+			if !reflect.DeepEqual(fields[i], fieldsToCompare[i]) {
+				return false
 			}
 		}
 	}
