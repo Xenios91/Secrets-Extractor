@@ -1,7 +1,5 @@
 # passession-extractor
 
-Project for class
-
 ## General Information
 - Author: Corey Hartman
 - Language: Goalng v1.18
