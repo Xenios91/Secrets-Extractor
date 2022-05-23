@@ -32,6 +32,10 @@ func (packetDetails *PacketDetails) FindBasicAuth() []string {
 	return potentialAuth
 }
 
+func isHTML(value *string) bool {
+	return strings.Contains(*value, "<div") || strings.Contains(*value, "<html")
+}
+
 func (packetDetails *PacketDetails) FindCookies() []string {
 	valuesOfInterest := []string{"cookie"}
 	potentialCookies := make([]string, 0)
@@ -44,7 +48,9 @@ func (packetDetails *PacketDetails) FindCookies() []string {
 		for z := 0; z < len(valuesOfInterest); z++ {
 			if strings.Contains(value, valuesOfInterest[z]) {
 				cookie = headers[i]
-				potentialCookies = append(potentialCookies, cookie)
+				if !isHTML(&cookie) {
+					potentialCookies = append(potentialCookies, cookie)
+				}
 			}
 		}
 	}

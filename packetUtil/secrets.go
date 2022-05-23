@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
+	"reflect"
 	"time"
 )
 
@@ -34,4 +35,46 @@ func (secrets *Secrets) ToJson() *string {
 
 	jsonString := buffer.String()
 	return &jsonString
+}
+
+func (secrets *Secrets) IsEqual(secretToCompare *Secrets) bool {
+	secretsTemp := *secrets
+	secretsTemp.TimeStamp = time.Time{}
+	secretToCompareTemp := *secretToCompare
+	secretToCompareTemp.TimeStamp = time.Time{}
+
+	isEqual := reflect.DeepEqual(secretsTemp, secretToCompareTemp)
+	if !isEqual {
+		secretsTempFields := reflect.ValueOf(secretsTemp)
+		fields := make([]interface{}, secretsTempFields.NumField())
+
+		for i := 0; i < secretsTempFields.NumField(); i++ {
+			field := secretsTempFields.Field(i)
+			fieldKind := field.Kind()
+			if fieldKind == reflect.Slice {
+				fields[i] = secretsTempFields.Field(i).Interface()
+			}
+		}
+
+		secretsToCompareFields := reflect.ValueOf(secretsTemp)
+		fieldsToCompare := make([]interface{}, secretsToCompareFields.NumField())
+		for i := 0; i < secretsToCompareFields.NumField(); i++ {
+			field := secretsToCompareFields.Field(i)
+			fieldKind := field.Kind()
+			if fieldKind == reflect.Slice {
+				fieldsToCompare[i] = secretsTempFields.Field(i).Interface()
+			}
+		}
+
+		if len(fields) != len(fieldsToCompare) {
+			return isEqual
+		}
+
+		for i := 0; i < len(fields); i++ {
+			if reflect.DeepEqual(fields[i], fieldsToCompare[i]) {
+				return true
+			}
+		}
+	}
+	return isEqual
 }

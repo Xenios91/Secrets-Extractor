@@ -49,7 +49,18 @@ func main() {
 		passwords := packetDetails.FindPasswords()
 		if len(basicAuth) > 0 || len(cookies) > 0 || len(usernames) > 0 || len(passwords) > 0 {
 			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: basicAuth, Cookies: cookies, Usernames: usernames, Passwords: passwords}
-			secretsArray = append(secretsArray, *secrets)
+
+			duplicate := false
+			for i := 0; i < len(secretsArray); i++ {
+				if secretsArray[i].IsEqual(secrets) {
+					duplicate = true
+					break
+				}
+			}
+
+			if !duplicate {
+				secretsArray = append(secretsArray, *secrets)
+			}
 		}
 	}
 
