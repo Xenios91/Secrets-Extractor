@@ -9,6 +9,6 @@ Project for class
 
 ## Video URL
 
-## Installation
+## Installation/Compilation
 - Requires Golang v1.18
 - With in the projects root directory run ```go build .```
