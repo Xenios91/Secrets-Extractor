@@ -39,17 +39,16 @@ func main() {
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
 		packetDetails := packetUtils.NewPacketDetails(&packet)
-		if packetDetails.Packet.ApplicationLayer() == nil {
+		if packetDetails.GetApplicationLayer() == nil {
 			continue //no application layer, we skip this packet
 		}
 
 		basicAuth := packetDetails.FindBasicAuth()
-		sessionIDs := packetDetails.FindSessionID()
 		cookies := packetDetails.FindCookies()
 		usernames := packetDetails.FindUsernames()
 		passwords := packetDetails.FindPasswords()
-		if len(basicAuth) > 0 || len(sessionIDs) > 0 || len(cookies) > 0 || len(usernames) > 0 || len(passwords) > 0 {
-			secrets := &packetUtils.Secrets{BasicAuths: basicAuth, SessionIDs: sessionIDs, Cookies: cookies, Usernames: usernames, Passwords: passwords}
+		if len(basicAuth) > 0 || len(cookies) > 0 || len(usernames) > 0 || len(passwords) > 0 {
+			secrets := &packetUtils.Secrets{BasicAuths: basicAuth, Cookies: cookies, Usernames: usernames, Passwords: passwords}
 			secretsArray = append(secretsArray, *secrets)
 		}
 	}

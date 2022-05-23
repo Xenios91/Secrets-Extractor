@@ -13,10 +13,11 @@ func (packetDetails *PacketDetails) FindBasicAuth() []string {
 	headers := packetDetails.extractHTTPHeaders()
 	for i := 0; i < len(headers); i++ {
 		value := headers[i]
-		if strings.Contains(strings.ToLower(value), "authorization: basic") {
-			basicAuth := strings.Split(value, "authorization: basic")
+		if strings.Contains(value, "Authorization: Basic") {
+			basicAuth := strings.Split(value, "Authorization: Basic")
 			if len(basicAuth) > 0 {
-				decodedBase64, err := base64.StdEncoding.DecodeString(basicAuth[1])
+				encodedCreds := strings.TrimSpace(basicAuth[1])
+				decodedBase64, err := base64.StdEncoding.DecodeString(encodedCreds)
 				if err != nil {
 					log.Println(err)
 					continue
@@ -35,42 +36,19 @@ func (packetDetails *PacketDetails) FindCookies() []string {
 	valuesOfInterest := []string{"cookie"}
 	potentialCookies := make([]string, 0)
 
-	kvp := packetDetails.extractKVP()
-	for i := 0; i < len(kvp); i++ {
-		value := strings.ToLower(kvp[i])
-		var password string
+	headers := packetDetails.extractHTTPHeaders()
+	for i := 0; i < len(headers); i++ {
+		value := strings.ToLower(headers[i])
+		var cookie string
 
 		for z := 0; z < len(valuesOfInterest); z++ {
-			if strings.Contains(valuesOfInterest[z], value) {
-				if len(kvp) > i+1 {
-					password = kvp[i+1]
-					potentialCookies = append(potentialCookies, password)
-				}
+			if strings.Contains(value, valuesOfInterest[z]) {
+				cookie = headers[i]
+				potentialCookies = append(potentialCookies, cookie)
 			}
 		}
 	}
 	return potentialCookies
-}
-
-func (packetDetails *PacketDetails) FindSessionID() []string {
-	valuesOfInterest := []string{"id", "session"}
-	potentialSessionIDs := make([]string, 0)
-
-	kvp := packetDetails.extractKVP()
-	for i := 0; i < len(kvp); i++ {
-		value := kvp[i]
-		var password string
-
-		for z := 0; z < len(valuesOfInterest); z++ {
-			if strings.Contains(valuesOfInterest[z], value) {
-				if len(kvp) > i+1 {
-					password = kvp[i+1]
-					potentialSessionIDs = append(potentialSessionIDs, password)
-				}
-			}
-		}
-	}
-	return potentialSessionIDs
 }
 
 func (packetDetails *PacketDetails) FindUsernames() []string {
@@ -80,13 +58,13 @@ func (packetDetails *PacketDetails) FindUsernames() []string {
 	kvp := packetDetails.extractKVP()
 	for i := 0; i < len(kvp); i++ {
 		value := kvp[i]
-		var password string
+		var username string
 
 		for z := 0; z < len(valuesOfInterest); z++ {
 			if strings.Contains(valuesOfInterest[z], value) {
 				if len(kvp) > i+1 {
-					password = kvp[i+1]
-					potentialUsernames = append(potentialUsernames, password)
+					username = kvp[i+1]
+					potentialUsernames = append(potentialUsernames, username)
 				}
 			}
 		}

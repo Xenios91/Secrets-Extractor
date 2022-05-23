@@ -7,14 +7,13 @@ import (
 
 type Secrets struct {
 	BasicAuths []string
-	SessionIDs []string
 	Cookies    []string
 	Usernames  []string
 	Passwords  []string
 }
 
-func NewSecrets(basicAuths, sessionID, cookie, username, password []string) *Secrets {
-	return &Secrets{basicAuths, sessionID, cookie, username, password}
+func NewSecrets(basicAuths, cookie, username, password []string) *Secrets {
+	return &Secrets{basicAuths, cookie, username, password}
 }
 
 func (secrets *Secrets) ToJson() *string {

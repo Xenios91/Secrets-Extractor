@@ -7,19 +7,19 @@ import (
 )
 
 type PacketDetails struct {
-	Packet gopacket.Packet
+	packetContents gopacket.Packet
 }
 
 func NewPacketDetails(packet *gopacket.Packet) *PacketDetails {
-	return &PacketDetails{Packet: *packet}
+	return &PacketDetails{packetContents: *packet}
 }
 
-func (packet *PacketDetails) getApplicationLayer() gopacket.ApplicationLayer {
-	return packet.Packet.ApplicationLayer()
+func (packet *PacketDetails) GetApplicationLayer() gopacket.ApplicationLayer {
+	return packet.packetContents.ApplicationLayer()
 }
 
 func (packetDetails *PacketDetails) extractHTTPHeaders() []string {
-	applicationLayer := packetDetails.getApplicationLayer()
+	applicationLayer := packetDetails.GetApplicationLayer()
 	payloadAsString := string(applicationLayer.Payload())
 	headersTemp := strings.Split(payloadAsString, "\r\n")
 	headers := make([]string, 0)
@@ -33,7 +33,7 @@ func (packetDetails *PacketDetails) extractHTTPHeaders() []string {
 }
 
 func (packetDetails *PacketDetails) extractKVP() []string {
-	applicationLayer := packetDetails.getApplicationLayer()
+	applicationLayer := packetDetails.GetApplicationLayer()
 	payloadAsString := string(applicationLayer.Payload())
 	headerTerminator := "\r\n\r\n"
 	endOfHeaderElement := strings.Index(payloadAsString, headerTerminator)
