@@ -18,27 +18,19 @@ func (packet *PacketDetails) GetApplicationLayer() gopacket.ApplicationLayer {
 	return packet.packetContents.ApplicationLayer()
 }
 
-func (packetDetails *PacketDetails) extractHTTPHeaders() []string {
-	applicationLayer := packetDetails.GetApplicationLayer()
-	payloadAsString := string(applicationLayer.Payload())
-	headersTemp := strings.Split(payloadAsString, "\r\n")
-	headers := make([]string, 0)
+func (packetDetails *PacketDetails) extractHttpComponents() ([]string, []string) {
+	var headerPairs []string
+	var bodyPairs []string
 
-	for i := 0; i < len(headersTemp); i++ {
-		if len(headersTemp[i]) > 0 {
-			headers = append(headers, headersTemp[i])
-		}
-	}
-	return headers
-}
-
-func (packetDetails *PacketDetails) extractKVP() []string {
 	applicationLayer := packetDetails.GetApplicationLayer()
 	payloadAsString := string(applicationLayer.Payload())
 	headerTerminator := "\r\n\r\n"
 	endOfHeaderElement := strings.Index(payloadAsString, headerTerminator)
-	payloadAsString = payloadAsString[endOfHeaderElement+len(headerTerminator):]
-
-	kvp := strings.Split(payloadAsString, "=")
-	return kvp
+	if endOfHeaderElement != -1 {
+		headerAsString := payloadAsString[:endOfHeaderElement+len(headerTerminator)]
+		headerPairs = strings.Split(headerAsString, "\r\n")
+		bodyAsString := payloadAsString[endOfHeaderElement+len(headerTerminator):]
+		bodyPairs = strings.Split(bodyAsString, "&")
+	}
+	return headerPairs, bodyPairs
 }

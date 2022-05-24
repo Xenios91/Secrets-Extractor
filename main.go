@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	packetUtils "passession-extractor/packetUtil"
@@ -49,15 +48,10 @@ func main() {
 			continue //no application layer, we skip this packet
 		}
 
-		basicAuth := packetDetails.FindBasicAuth()
-		cookies := packetDetails.FindCookies()
-		usernames := packetDetails.FindUsernames()
-		passwords := packetDetails.FindPasswords()
-		if len(passwords) > 0 {
-			fmt.Print()
-		}
-		if len(basicAuth) > 0 || len(cookies) > 0 || len(usernames) > 0 || len(passwords) > 0 {
-			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: basicAuth, Cookies: cookies, Usernames: usernames, Passwords: passwords}
+		secrets, found := packetDetails.FindCredentials()
+
+		if found {
+			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: secrets["basicauth"], Cookies: secrets["cookies"], Usernames: secrets["usernames"], Passwords: secrets["passwords"]}
 
 			duplicate := false
 			for i := 0; i < len(secretsArray); i++ {
