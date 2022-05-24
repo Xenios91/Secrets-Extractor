@@ -10,15 +10,18 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/schollz/progressbar/v3"
 )
 
 var secretsArray []packetUtils.Secrets = make([]packetUtils.Secrets, 0)
 
 func main() {
 	var pcapFile string
+	var outputFile string
 	var moreDetails bool
 
 	flag.StringVar(&pcapFile, "file", "", "-file=myCapture.pcap")
+	flag.StringVar(&outputFile, "output", "secrets_dump.json", "-output=secrets.json")
 	flag.BoolVar(&moreDetails, "details", false, "-details=false")
 	flag.Parse()
 
@@ -38,6 +41,8 @@ func main() {
 	defer handle.Close()
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	bar := progressbar.Default(int64(len(packetSource.Packets())))
+
 	for packet := range packetSource.Packets() {
 		packetDetails := packetUtils.NewPacketDetails(&packet)
 		if packetDetails.GetApplicationLayer() == nil {
@@ -66,9 +71,10 @@ func main() {
 				secretsArray = append(secretsArray, *secrets)
 			}
 		}
+		bar.Add(1)
 	}
 
-	file, err := os.Create("secrets_dump.json")
+	file, err := os.Create(outputFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
