@@ -1,8 +1,13 @@
 # passession-extractor
 
-Project for class
-
-## General
+## General Information
 - Author: Corey Hartman
 - Language: Goalng v1.18
 - Description: Traverses packet captures and extracts: usernames, passwords, session ids, basic auth, and cookies.
+
+## Video URL
+
+## Installation/Compilation
+- Requires Golang v1.18
+- DevContainer included within the project.
+- With in the projects root directory run ```go build .```
