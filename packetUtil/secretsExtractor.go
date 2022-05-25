@@ -7,10 +7,9 @@ import (
 	"strings"
 )
 
-func (packetDetails *PacketDetails) findBasicAuth() []string {
+func findBasicAuth(headers []string) []string {
 	potentialAuth := make([]string, 0)
 
-	headers, _ := packetDetails.extractHttpComponents()
 	for i := 0; i < len(headers); i++ {
 		value := headers[i]
 		if strings.Contains(value, "Authorization: Basic") {
@@ -40,11 +39,10 @@ func isHTML(value *string) bool {
 	return strings.Contains(*value, "<div") || strings.Contains(*value, "<html")
 }
 
-func (packetDetails *PacketDetails) findCookies() []string {
+func findCookies(headers []string) []string {
 	valuesOfInterest := []string{"cookie"}
 	potentialCookies := make([]string, 0)
 
-	headers, _ := packetDetails.extractHttpComponents()
 	for i := 0; i < len(headers); i++ {
 		value := strings.ToLower(headers[i])
 		var cookie string
@@ -61,42 +59,48 @@ func (packetDetails *PacketDetails) findCookies() []string {
 	return potentialCookies
 }
 
-func (packetDetails *PacketDetails) FindCredentials() (map[string][]string, bool) {
-	secrets := make(map[string][]string)
+func findUsernames(kvp []string) []string {
 	usernameValuesOfInterest := []string{"user", "name"}
-	passwordValuesOfInterest := []string{"pass", "pw"}
-	secrets["usernames"] = make([]string, 0)
-	secrets["passwords"] = make([]string, 0)
-	secrets["cookies"] = packetDetails.findCookies()
-	secrets["basicauth"] = packetDetails.findBasicAuth()
+	usernames := make([]string, 0)
 
-	_, kvp := packetDetails.extractHttpComponents()
-
-	i := 0
-search_start:
-	for i < len(kvp) {
+	for i := 0; i < len(kvp); i++ {
 		kvpValue := kvp[i]
 
 		for z := 0; z < len(usernameValuesOfInterest); z++ {
 			if strings.Contains(kvpValue, usernameValuesOfInterest[z]) && !isHTML(&kvpValue) {
 				username := kvp[i]
-				secrets["usernames"] = append(secrets["usernames"], username)
-				i++
-				goto search_start
+				usernames = append(usernames, username)
 			}
 		}
+	}
+	return usernames
+}
+
+func findPasswords(kvp []string) []string {
+	passwordValuesOfInterest := []string{"pass", "pw"}
+	passwords := make([]string, 0)
+
+	for i := 0; i < len(kvp); i++ {
+		kvpValue := kvp[i]
 
 		for z := 0; z < len(passwordValuesOfInterest); z++ {
-			if strings.Contains(kvpValue, passwordValuesOfInterest[z]) {
+			if strings.Contains(kvpValue, passwordValuesOfInterest[z]) && !isHTML(&kvpValue) {
 				password := kvp[i]
-				secrets["passwords"] = append(secrets["passwords"], password)
-				i++
-				goto search_start
+				passwords = append(passwords, password)
 			}
 		}
-
-		i++
 	}
+	return passwords
+}
+
+func (packetDetails *PacketDetails) FindCredentials() (map[string][]string, bool) {
+	secrets := make(map[string][]string)
+	headers, kvp := packetDetails.extractHttpComponents()
+
+	secrets["usernames"] = findUsernames(kvp)
+	secrets["passwords"] = findPasswords(kvp)
+	secrets["cookies"] = findCookies(headers)
+	secrets["basicauth"] = findBasicAuth(headers)
 
 	found := len(secrets["usernames"]) > 0 || len(secrets["passwords"]) > 0 || len(secrets["cookies"]) > 0 || len(secrets["basicauth"]) > 0
 	return secrets, found
