@@ -17,10 +17,11 @@ type Secrets struct {
 	Cookies    []string
 	Usernames  []string
 	Passwords  []string
+	Jwt        []string
 }
 
-func NewSecrets(timeStamp time.Time, MacFlow, ipFlow, portFlow *string, basicAuths, cookie, username, password []string) *Secrets {
-	return &Secrets{timeStamp, *MacFlow, *ipFlow, *portFlow, basicAuths, cookie, username, password}
+func NewSecrets(timeStamp time.Time, MacFlow, ipFlow, portFlow *string, basicAuths, cookie, username, password, jwt []string) *Secrets {
+	return &Secrets{timeStamp, *MacFlow, *ipFlow, *portFlow, basicAuths, cookie, username, password, jwt}
 }
 
 func (secrets *Secrets) ToJson() *string {

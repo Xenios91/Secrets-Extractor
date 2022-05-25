@@ -7,6 +7,30 @@ import (
 	"strings"
 )
 
+func findJwt(headers []string) []string {
+	potentialJwt := make([]string, 0)
+
+	for i := 0; i < len(headers); i++ {
+		value := headers[i]
+		if strings.Contains(value, "Authorization: Bearer") {
+			jwt := strings.Split(value, "Authorization: Bearer")
+			if len(jwt) > 0 {
+				encodedJwt := strings.TrimSpace(jwt[1])
+				decodedBase64, err := base64.StdEncoding.DecodeString(encodedJwt)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				decodedBase64String := string(decodedBase64)
+				if strings.Contains(decodedBase64String, ":") {
+					potentialJwt = append(potentialJwt, decodedBase64String)
+				}
+			}
+		}
+	}
+	return potentialJwt
+}
+
 func findBasicAuth(headers []string) []string {
 	potentialAuth := make([]string, 0)
 
@@ -101,7 +125,8 @@ func (packetDetails *PacketDetails) FindCredentials() (map[string][]string, bool
 	secrets["passwords"] = findPasswords(kvp)
 	secrets["cookies"] = findCookies(headers)
 	secrets["basicauth"] = findBasicAuth(headers)
+	secrets["jwt"] = findJwt(headers)
 
-	found := len(secrets["usernames"]) > 0 || len(secrets["passwords"]) > 0 || len(secrets["cookies"]) > 0 || len(secrets["basicauth"]) > 0
+	found := len(secrets["usernames"]) > 0 || len(secrets["passwords"]) > 0 || len(secrets["cookies"]) > 0 || len(secrets["basicauth"]) > 0 || len(secrets["jwt"]) > 0
 	return secrets, found
 }

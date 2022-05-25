@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
-	"github.com/schollz/progressbar/v3"
 )
 
 var secretsArray []packetUtils.Secrets = make([]packetUtils.Secrets, 0)
@@ -39,8 +38,9 @@ func main() {
 	}
 	defer handle.Close()
 
+	log.Printf("Checking packets from file: [%s]\n", pcapFile)
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-	bar := progressbar.Default(int64(len(packetSource.Packets())))
+	counter := 1
 
 	for packet := range packetSource.Packets() {
 		packetDetails := packetUtils.NewPacketDetails(&packet)
@@ -51,7 +51,7 @@ func main() {
 		secrets, found := packetDetails.FindCredentials()
 
 		if found {
-			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: secrets["basicauth"], Cookies: secrets["cookies"], Usernames: secrets["usernames"], Passwords: secrets["passwords"]}
+			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: secrets["basicauth"], Cookies: secrets["cookies"], Usernames: secrets["usernames"], Passwords: secrets["passwords"], Jwt: secrets["jwt"]}
 
 			duplicate := false
 			for i := 0; i < len(secretsArray); i++ {
@@ -65,8 +65,9 @@ func main() {
 				secretsArray = append(secretsArray, *secrets)
 			}
 		}
-		bar.Add(1)
+		counter++
 	}
+	log.Printf("Packets checked: [%d]\n", counter)
 
 	file, err := os.Create(outputFile)
 	if err != nil {
@@ -79,4 +80,5 @@ func main() {
 			log.Println(err)
 		}
 	}
+	log.Printf("Extracted values stored in: [%s]\n", outputFile)
 }
