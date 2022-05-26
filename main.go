@@ -127,7 +127,7 @@ func main() {
 	//go routine to check for os signals to gracefully end capture
 	go func() {
 		<-sigs
-		fmt.Println("Ending capture... please wait...")
+		fmt.Println("Ending capture... please wait... if this takes more than a few minutes please use CTR + Z to terminate")
 		terminateCapture = true
 	}()
 
