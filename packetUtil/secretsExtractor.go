@@ -84,7 +84,7 @@ func findCookies(headers []string) []string {
 }
 
 func findUsernames(kvp []string) []string {
-	usernameValuesOfInterest := []string{"user", "name"}
+	usernameValuesOfInterest := []string{"user", "name", "email"}
 	usernames := make([]string, 0)
 
 	for i := 0; i < len(kvp); i++ {
