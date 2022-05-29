@@ -19,5 +19,7 @@
 
 ```-output=fileToDumpSecretsTo.json```
 
+- Example ```./passession-extractor -file=myPcapCapture.pcap -output=secrets_dump.json```
+
 - Note - If the file flag is not utilized, a live capture will be initiated.
 
