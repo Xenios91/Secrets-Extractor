@@ -10,6 +10,7 @@ import (
 	packetUtils "passession-extractor/packetUtil"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -17,7 +18,11 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-var secretsArray []packetUtils.Secrets = make([]packetUtils.Secrets, 0)
+var (
+	secretsArray []packetUtils.Secrets = make([]packetUtils.Secrets, 0)
+	wg           sync.WaitGroup
+	mutexLock    = &sync.Mutex{}
+)
 
 func getDeviceList() []pcap.Interface {
 	devices, err := pcap.FindAllDevs()
@@ -94,6 +99,48 @@ func getLiveCaptureHandle() *pcap.Handle {
 	return handle
 }
 
+func processPacket(packet gopacket.Packet) {
+	defer wg.Done()
+	packetDetails := packetUtils.NewPacketDetails(&packet)
+	if packetDetails.GetApplicationLayer() == nil {
+		return
+	}
+
+	secrets, found := packetDetails.FindCredentials()
+
+	if found {
+		secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: secrets["basicauth"], Cookies: secrets["cookies"], Usernames: secrets["usernames"], Passwords: secrets["passwords"], Jwt: secrets["jwt"]}
+
+		duplicate := false
+		for i := 0; i < len(secretsArray); i++ {
+			if secretsArray[i].IsEqual(secrets) {
+				duplicate = true
+				break
+			}
+		}
+
+		if !duplicate {
+			mutexLock.Lock()
+			defer mutexLock.Unlock()
+			secretsArray = append(secretsArray, *secrets)
+		}
+	}
+}
+
+func createSecretsFile(outputFile string) {
+	file, err := os.Create(outputFile)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for i := 0; i < len(secretsArray); i++ {
+		_, err = file.WriteString(*secretsArray[i].ToJson())
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 func main() {
 	var pcapFile string
 	var outputFile string
@@ -131,50 +178,33 @@ func main() {
 		terminateCapture = true
 	}()
 
-	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-	counter := 1
+	//process 1000 packets at max in parrallel
+	packetChan := make(chan gopacket.Packet, 1000)
 
+	//service to grab packets
+	go func(packetChan chan gopacket.Packet) {
+		for {
+			packet := <-packetChan
+			go processPacket(packet)
+		}
+	}(packetChan)
+
+	counter := 1
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
+
 		if terminateCapture {
 			break
 		}
 
-		packetDetails := packetUtils.NewPacketDetails(&packet)
-		if packetDetails.GetApplicationLayer() == nil {
-			continue //no application layer, we skip this packet
-		}
-
-		secrets, found := packetDetails.FindCredentials()
-
-		if found {
-			secrets := &packetUtils.Secrets{TimeStamp: packet.Metadata().Timestamp, MacFlow: packet.LinkLayer().LinkFlow().String(), IpFlow: packet.NetworkLayer().NetworkFlow().String(), PortFlow: packet.TransportLayer().TransportFlow().String(), BasicAuths: secrets["basicauth"], Cookies: secrets["cookies"], Usernames: secrets["usernames"], Passwords: secrets["passwords"], Jwt: secrets["jwt"]}
-
-			duplicate := false
-			for i := 0; i < len(secretsArray); i++ {
-				if secretsArray[i].IsEqual(secrets) {
-					duplicate = true
-					break
-				}
-			}
-
-			if !duplicate {
-				secretsArray = append(secretsArray, *secrets)
-			}
-		}
+		wg.Add(1)
+		packetChan <- packet
 		counter++
 	}
+
+	wg.Wait()
+
 	log.Printf("Packets checked: [%d]\n", counter)
-
-	file, err := os.Create(outputFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	for i := 0; i < len(secretsArray); i++ {
-		_, err = file.WriteString(*secretsArray[i].ToJson())
-		if err != nil {
-			log.Println(err)
-		}
-	}
+	createSecretsFile(outputFile)
 	log.Printf("Extracted values stored in: [%s]\n", outputFile)
 }
