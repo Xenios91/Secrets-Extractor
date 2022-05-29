@@ -14,5 +14,6 @@
 
 ## Utilization
 ```-file=myPcapToScan.pcap``` If file is not utilized, a live capture will initiate.
+
 ```-output=fileToDumpSecretsTo.json```
 
