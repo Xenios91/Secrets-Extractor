@@ -1,5 +1,7 @@
 # passession-extractor
 
+A tool to check packets for secrets.
+
 ## General Information
 - Author: Corey Hartman
 - Language: Golang v1.18
