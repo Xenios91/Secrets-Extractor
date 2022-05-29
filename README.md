@@ -15,9 +15,9 @@
 ## Utilization
 - Running the program
 
-- Set pcap file to check ```-file=myPcapToScan.pcap``` 
+- Set the pcap file to check ```-file=myPcapToScan.pcap``` 
 
-- Set file to output secrets to ```-output=fileToDumpSecretsTo.json```
+- Set the file to output secrets to ```-output=fileToDumpSecretsTo.json```
 
 - Example ```./passession-extractor -file=myPcapCapture.pcap -output=secrets_dump.json```
 
