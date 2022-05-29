@@ -13,6 +13,8 @@
 - With in the projects root directory run ```go build .```
 
 ## Utilization
+Run: ```./passession-extractor```
+
 ```-file=myPcapToScan.pcap``` 
 
 ```-output=fileToDumpSecretsTo.json```
