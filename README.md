@@ -13,8 +13,6 @@
 - With in the projects root directory run ```go build .```
 
 ## Utilization
-- Running the program
-
 - Set the pcap file to check ```-file=myPcapToScan.pcap``` 
 
 - Set the file to output secrets to ```-output=fileToDumpSecretsTo.json```
