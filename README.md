@@ -13,4 +13,6 @@
 - With in the projects root directory run ```go build .```
 
 ## Utilization
-```-file=myPcapToScan.pcap```
+```-file=myPcapToScan.pcap``` If file is not utilized, a live capture will initiate.
+```-output=fileToDumpSecretsTo.json```
+
