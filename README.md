@@ -19,5 +19,5 @@
 
 - Example ```./passession-extractor -file=myPcapCapture.pcap -output=secrets_dump.json```
 
-- Note - If the ```-file``` flag is not utilized, a live capture will be initiated.
+- Note - If the ```-file``` flag is not utilized, a live capture will be initiated. To utilize live capture, ensure the user you are running as has permissions to perform a packet capture.
 
