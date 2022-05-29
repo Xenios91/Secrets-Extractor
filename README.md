@@ -13,15 +13,15 @@
 - With in the projects root directory run ```go build .```
 
 ## Utilization
-Running the program
+- Running the program
 
 ```./passession-extractor```
 
-Flags
+- Flags
 
 ```-file=myPcapToScan.pcap``` 
 
 ```-output=fileToDumpSecretsTo.json```
 
-Note - If the file flag is not utilized, a live capture will be initiated.
+- Note - If the file flag is not utilized, a live capture will be initiated.
 
