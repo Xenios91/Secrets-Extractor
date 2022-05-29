@@ -2,7 +2,7 @@
 
 ## General Information
 - Author: Corey Hartman
-- Language: Goalng v1.18
+- Language: Golang v1.18
 - Description: Traverses packet captures and extracts: usernames, passwords, session ids, basic auth, and cookies.
 
 ## Video URL
