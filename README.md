@@ -15,10 +15,6 @@
 ## Utilization
 - Running the program
 
-```./passession-extractor```
-
-- Flags
-
 ```-file=myPcapToScan.pcap``` 
 
 ```-output=fileToDumpSecretsTo.json```
