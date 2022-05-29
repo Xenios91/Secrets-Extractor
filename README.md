@@ -11,3 +11,6 @@
 - Requires Golang v1.18
 - DevContainer included within the project.
 - With in the projects root directory run ```go build .```
+
+## Utilization
+'''-file=myPcapToScan.pcap'''
