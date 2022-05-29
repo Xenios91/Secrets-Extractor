@@ -17,5 +17,5 @@
 
 ```-output=fileToDumpSecretsTo.json```
 
-Note - If file is not utilized, a live capture will initiate.
+Note - If the file flag is not utilized, a live capture will be initiated.
 
