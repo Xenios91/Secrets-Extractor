@@ -13,4 +13,4 @@
 - With in the projects root directory run ```go build .```
 
 ## Utilization
-'''-file=myPcapToScan.pcap'''
+```-file=myPcapToScan.pcap```
