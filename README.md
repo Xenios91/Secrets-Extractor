@@ -7,6 +7,8 @@
 
 ## Video URL
 
+https://youtu.be/APPpxj74Uok
+
 ## Installation/Compilation
 - Requires Golang v1.18
 - DevContainer included within the project.
