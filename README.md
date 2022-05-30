@@ -1,6 +1,7 @@
 # Secrets Extractor
 
 ## General Information
+- Author: Corey Hartman
 - Language: Golang v1.18
 - Description: Traverses packet captures/live traffic and extracts: usernames, passwords, session id's, basic auth, and cookies from HTTP traffic.
 
