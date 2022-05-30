@@ -1,4 +1,4 @@
-# passession-extractor
+# Secrets Extractor
 
 ## General Information
 - Author: Corey Hartman
