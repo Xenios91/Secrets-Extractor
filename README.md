@@ -5,10 +5,6 @@
 - Language: Golang v1.18
 - Description: Traverses packet captures/live traffic and extracts: usernames, passwords, session id's, basic auth, and cookies.
 
-## Video URL
-
-https://youtu.be/APPpxj74Uok
-
 ## Installation/Compilation
 - Requires Golang v1.18
 - DevContainer included within the project.
