@@ -2,7 +2,7 @@
 
 ## General Information
 - Language: Golang v1.18
-- Description: Traverses packet captures/live traffic and extracts: usernames, passwords, session id's, basic auth, and cookies from layer 7 HTTP traffic.
+- Description: Traverses packet captures/live traffic and extracts: usernames, passwords, session id's, basic auth, and cookies from HTTP traffic.
 
 ## Installation/Compilation
 - Requires Golang v1.18
