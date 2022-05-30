@@ -10,6 +10,7 @@
 ## Installation/Compilation
 - Requires Golang v1.18
 - DevContainer included within the project.
+- libpcap-dev required ```sudo apt install libpcap-dev -y```
 - With in the projects root directory run ```go build .```
 
 ## Utilization
