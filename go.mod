@@ -1,4 +1,4 @@
-module passession-extractor
+module secrets-extractor
 
 go 1.18
 

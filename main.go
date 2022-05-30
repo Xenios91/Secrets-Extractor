@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	packetUtils "passession-extractor/packetUtil"
+	packetUtils "secrets-extractor/packetUtil"
 	"strconv"
 	"strings"
 	"sync"
@@ -141,10 +141,23 @@ func createSecretsFile(outputFile string) {
 	}
 }
 
+func printLogo() {
+	var logo string = `
+	   ___  ____  ___  ____  ____  ____  ___    ____  _  _  ____  ____    __    ___  ____  _____  ____ 
+	  / __)( ___)/ __)(  _ \( ___)(_  _)/ __)  ( ___)( \/ )(_  _)(  _ \  /__\  / __)(_  _)(  _  )(  _ \
+	  \__ \ )__)( (__  )   / )__)   )(  \__ \   )__)  )  (   )(   )   / /(__)\( (__   )(   )(_)(  )   /
+	  (___/(____)\___)(_)\_)(____) (__) (___/  (____)(_/\_) (__) (_)\_)(__)(__)\___) (__) (_____)(_)\_)
+
+ `
+	fmt.Println(logo)
+}
+
 func main() {
 	var pcapFile string
 	var outputFile string
 	var handle *pcap.Handle
+
+	printLogo()
 
 	flag.StringVar(&pcapFile, "file", "", "-file=myCapture.pcap")
 	flag.StringVar(&outputFile, "output", "secrets_dump.json", "-output=secrets.json")
