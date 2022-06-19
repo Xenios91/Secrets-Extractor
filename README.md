@@ -1,5 +1,7 @@
 # Secrets Extractor
 
+[![CodeQL](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml)
+
 ## General Information
 - Author: Corey Hartman
 - Language: Golang v1.18
