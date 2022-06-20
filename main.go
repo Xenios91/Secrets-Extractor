@@ -87,11 +87,11 @@ func getDeviceSelection() pcap.Interface {
 
 func getLiveCaptureHandle() *pcap.Handle {
 	device := getDeviceSelection()
-	var snapshot_len int32 = 1024
+	var snapshotLen int32 = 1024
 	var promiscuous bool = true
 	var timeout time.Duration = 30 * time.Second
 
-	handle, err := pcap.OpenLive(device.Name, snapshot_len, promiscuous, timeout)
+	handle, err := pcap.OpenLive(device.Name, snapshotLen, promiscuous, timeout)
 	if err != nil {
 		log.Fatalln(err)
 	}
