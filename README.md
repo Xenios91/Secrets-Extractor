@@ -1,6 +1,7 @@
 # Secrets Extractor
 
-[![CodeQL](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml)
+[![CodeQL](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/codeql-analysis.yml) 
+[![Go](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/go.yml/badge.svg)](https://github.com/Xenios91/Secrets-Extractor/actions/workflows/go.yml)
 
 ## General Information
 - Author: Corey Hartman
